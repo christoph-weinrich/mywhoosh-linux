@@ -9,20 +9,24 @@ replacement for Apple's service, and it does not switch the prefix to Microsoft
 
 - A 64-bit Wine prefix and Wine Mono with `mcs.exe` and Mono.Cecil 0.11.x bundled.
   Wine Mono 11.3.0 is the tested runtime. Other runtimes must pass setup's checks.
-- Apple's `Bonjour64.msi` from the Bonjour SDK, obtained under Apple's terms.
-  Start at [Apple's Bonjour page](https://developer.apple.com/bonjour/).
-  The Lutris installer asks for this local file and installs it with
-  `ADDLOCAL=ALL`, including its COM components. The project does not redistribute
-  Apple binaries. Merely running Linux Avahi is not sufficient.
+- Apple's Bonjour, obtained under Apple's terms. Lutris downloads the official
+  [Bonjour Print Services for Windows v2.0.2 package](https://support.apple.com/en-us/106380)
+  without an Apple account, verifies its pinned SHA-256, and extracts
+  `Bonjour64.msi`. Complete Apple's installer and accept its licence when it
+  opens. `ADDLOCAL=ALL` includes the required COM components; neither the printer
+  wizard nor Apple Software Update is installed. The project does not
+  redistribute Apple binaries. Merely running Linux Avahi is not sufficient.
+- Lutris's 7-Zip extractor, supplied by its runtime or the system's `7zip`/`p7zip`
+  package. No manual extraction is needed.
 - For building a release: `mcs`, plus the existing project's build prerequisites.
   End users do not need a host Mono installation: setup uses the selected Wine
   Mono runtime's own compiler and Cecil library.
 
 ## Installation
 
-Both Lutris recipes install Bonjour and run `SetupBonjour.exe` before downloading
-the game. This catches missing COM components or an unsupported Mono runtime
-before the large download. The release archive contains:
+Both Lutris recipes download and install Bonjour and run `SetupBonjour.exe`
+before downloading the game. This catches missing COM components or an
+unsupported Mono runtime before the large download. The release archive contains:
 
 - `BonjourCompat.dll`: the managed event adapter, with no game dependency.
 - `SetupBonjour.exe`: runtime discovery, local generation and health checks.
@@ -50,6 +54,26 @@ Lutris 0.5.14 ignores a prelaunch command's failure status, so the guard uses
 `system.prefix_command`. The existing Bluetooth prelaunch/postexit hooks stay
 in place; do not remove them. Setup and subscription failures are reported in
 the normal `MYWHOOSH_SHIM_LOG` and Lutris launch output.
+
+### Download failures and offline use
+
+The recipes pin Apple's HTTPS download and its SHA-256. A changed package must
+be reviewed and retested before updating that hash; do not bypass verification.
+The download is Apple's legacy 2010 package, still linked from its support page,
+not a claim that Apple provides a current Windows release or ongoing updates.
+
+If the download is unavailable, obtain the same `BonjourPSSetup.exe` from
+[Apple's support page](https://support.apple.com/en-us/106380) on another machine
+and choose **Select File** for Bonjour in Lutris's file-source screen. The same
+checksum and automatic extraction apply.
+
+An existing SDK `Bonjour64.msi` remains a manual fallback for a local recipe:
+replace the `bonjour` file entry with
+`'N/A:Select Apple Bonjour64.msi from the Bonjour SDK'`, remove only the
+`extract` step whose `file` is `bonjour`, and set the Bonjour `msiexec` arguments
+to `/i "$bonjour" ADDLOCAL=ALL /qf /norestart`. Keep `SetupBonjour.exe` and the
+launch guard enabled. Do not select an MSI in place of the default EXE download;
+its checksum and archive format are intentionally different.
 
 ## Build and test
 
@@ -124,8 +148,9 @@ PY
 lutris -i build/mywhoosh-local.yml
 ```
 
-Choose a **new destination prefix** and supply the Apple MSI when asked. A full
-game installation needs substantial free space. Do not use `lutris/debug.sh`
+Choose a **new destination prefix** and complete Apple's Bonjour installer when
+it opens. No local MSI is required. A full game installation needs substantial
+free space. Do not use `lutris/debug.sh`
 as a shortcut without reading it: it removes its previous debug installation.
 
 ## Publishing
@@ -158,6 +183,13 @@ MyWhoosh. A complete fresh game download, HD gameplay, every native Bonjour
 event and physical trainer/resistance behavior have not been independently
 validated with this packaged version. Flatpak has not been tested with this
 addition.
+
+The automatic Apple download was also validated on 2026-10-31: the pinned
+package passed checksum verification and Lutris 0.5.14 extraction; its
+`Bonjour64.msi` installed with all features in a fresh prefix and passed the
+real local-only COM callback, typed arguments, duplicate removal, unsubscription
+and synthetic-event tests. The original-game delegate tests above used the SDK
+MSI; they have not been repeated with this package.
 
 For rollback, close the game, remove this game's `prefix_command` and
 `MONO_GAC_PREFIX`, then remove only `bleshim/bonjour` and the four Bonjour files

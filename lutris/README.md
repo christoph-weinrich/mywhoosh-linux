@@ -18,9 +18,14 @@ lutris -i lutris/mywhoosh.yml
 The fork's Bonjour release must be published before these recipes can download
 it. For an unpublished checkout, use the
 [local installer procedure](../bonjour/README.md#local-installer-before-publication).
-Both installers ask for Apple's `Bonjour64.msi` from the Bonjour SDK and install
-all its features. They generate a per-game framework copy using Wine Mono's
-bundled compiler and Cecil; no runner or game framework file is overwritten.
+Both installers download Apple's official Bonjour Print Services package,
+verify a pinned SHA-256, and extract `Bonjour64.msi` using Lutris's 7-Zip
+extractor. Complete Apple's Bonjour installer, including its licence prompt;
+all Bonjour features are requested, including COM support. No Apple account,
+manual extraction, printer wizard or Apple Software Update is needed. See
+[download failures and offline use](../bonjour/README.md#download-failures-and-offline-use)
+for local-file fallbacks. They generate a per-game framework copy using Wine
+Mono's bundled compiler and Cecil; no runner or game framework file is overwritten.
 
 The recipe adds `MONO_GAC_PREFIX: Z:$GAMEDIR/bleshim/bonjour` and a
 `prefix_command` pointing at `mywhoosh-bonjour.sh`. The latter validates runtime

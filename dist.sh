@@ -127,7 +127,7 @@ fi
 gh release create "$tag" \
     --repo "$repository" \
     --title "$tag" \
-    --notes "$(printf 'Requires Apple Bonjour64.msi (selected during installation).\n\nInstall with:\n\n    lutris -i https://github.com/%s/releases/download/%s/mywhoosh.yml\n\n```\n%s\n```\n' "$repository" "$tag" "$(cat "$stage/MANIFEST")")" \
+    --notes "$(printf 'Downloads and verifies Bonjour directly from Apple. Complete its installer and licence prompt; no local MSI or Apple account is required.\n\nInstall with:\n\n    lutris -i https://github.com/%s/releases/download/%s/mywhoosh.yml\n\n```\n%s\n```\n' "$repository" "$tag" "$(cat "$stage/MANIFEST")")" \
     "$archive" lutris/mywhoosh.yml lutris/mywhoosh-hd.yml
 
 echo

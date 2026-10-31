@@ -17,8 +17,8 @@ companion app.
 - A 64-bit Linux system with [Lutris](https://lutris.net/downloads/) installed
 - `python3`
 - Wine Mono with its bundled compiler and Mono.Cecil 0.11.x (11.3.0 tested)
-- Apple's `Bonjour64.msi` from the Bonjour SDK, selected during installation;
-   see [Bonjour requirements](bonjour/README.md#requirements)
+- Accept Apple's Bonjour licence when its installer opens. The package is
+   downloaded automatically; no Apple account or existing MSI is needed.
 - Working Bluetooth: if `bluetoothctl scan on` shows your trainer when you
   pedal, you are ready
 
@@ -55,11 +55,13 @@ install:
 lutris -i https://github.com/christoph-weinrich/mywhoosh-linux/releases/latest/download/mywhoosh-hd.yml
 ```
 
-Lutris then does everything itself:
+Lutris handles the downloads and setup; complete Apple's Bonjour installer
+when it opens:
 
 1. creates a 64-bit Wine prefix,
-2. installs the selected Bonjour MSI with COM support, prepares an isolated
-   Mono compatibility copy, and adds Bluetooth support and the game updater,
+2. downloads and verifies Apple's Bonjour package, extracts and installs Bonjour
+   with COM support, prepares an isolated Mono compatibility copy, and adds
+   Bluetooth support and the game updater,
 3. downloads the MyWhoosh package straight from the Microsoft Store and
    installs it into the prefix, in the same progress window as later updates,
 4. wires the helper to start and stop with the game, and checks your setup.

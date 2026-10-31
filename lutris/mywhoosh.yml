@@ -30,7 +30,10 @@ script:
     # themselves -- fetched separately, they are eventually different builds
     # of it.
     - shim: https://github.com/$shim_repository/releases/download/$shim_release/mywhoosh-bleshim-$shim_release.tar.gz
-    - bonjour: 'N/A:Select Apple Bonjour64.msi from the Bonjour SDK (all COM features are required)'
+    - bonjour:
+        url: https://download.info.apple.com/Mac_OS_X/061-8098.20100603.gthyu/BonjourPSSetup.exe
+        filename: BonjourPSSetup.exe
+        checksum: sha256:7f1ec347cd429cfb25a34b2147e02231334f28290e0c28be213415b0f99da1a0
   game:
     exe: drive_c/MyWhoosh/MyWhoosh.exe
     prefix: $GAMEDIR
@@ -79,11 +82,15 @@ script:
     - chmodx: $GAMEDIR/bleshim/blehelper.py
     - chmodx: $GAMEDIR/bleshim/mywhoosh-ble.sh
     - chmodx: $GAMEDIR/bleshim/mywhoosh-bonjour.sh
+    - extract:
+        file: bonjour
+        dst: $CACHE/bonjour
+        format: exe
     - task:
         name: wineexec
         description: Installing Bonjour with COM support
         executable: msiexec
-        args: '/i "$bonjour" ADDLOCAL=ALL /qn /norestart'
+        args: '/i "$CACHE/bonjour/Bonjour64.msi" ADDLOCAL=ALL /qf /norestart'
         prefix: $GAMEDIR
         arch: win64
     - task:
